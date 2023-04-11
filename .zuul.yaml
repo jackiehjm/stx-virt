@@ -1,0 +1,264 @@
+---
+- project:
+    templates:
+      - publish-stx-docs
+      - stx-release-notes-jobs
+    check:
+      jobs:
+        - openstack-tox-pep8
+        - openstack-tox-linters
+        - stx-virt-pylint
+    gate:
+      jobs:
+        - openstack-tox-pep8
+        - openstack-tox-linters
+        - stx-virt-pylint
+    post:
+      jobs:
+        - stx-virt-upload-git-mirror
+
+# This is the common base job definition for StarlingX flock services
+- job:
+    name: flock-devstack-virt-base
+    parent: devstack
+    description: |
+      Base job for StarlingX Flock components DevStack tests
+    nodeset: openstack-single-node-bionic
+    roles:
+      - zuul: openstack/devstack
+    timeout: 9000
+    required-projects:
+      - name: openstack/devstack
+      - name: openstack/keystone
+      - name: openstack/requirements
+    vars:
+      devstack_services:
+        ceilometer-acentral: false
+        ceilometer-acompute: false
+        ceilometer-alarm-evaluator: false
+        ceilometer-alarm-notifier: false
+        ceilometer-anotification: false
+        ceilometer-api: false
+        ceilometer-collector: false
+        horizon: false
+        # Swift services
+        s-account: false
+        s-container: false
+        s-object: false
+        s-proxy: false
+        tempest: false
+        # Database
+        mysql: false
+        postgresql: true
+      devstack_localrc:
+        # LIBS_FROM_GIT: keystone
+        FORCE: yes
+
+# A minimal base job that eliminates most OpenStack services
+# Leave Celiometer, Horizon and Swift in the base since none
+# of our jobs need them.
+- job:
+    name: flock-devstack-virt-base-min
+    parent: flock-devstack-virt-base
+    timeout: 7800
+    vars:
+      devstack_services:
+        # Cinder services
+        c-api: false
+        c-bak: false
+        c-sch: false
+        c-vol: false
+        cinder: false
+        # Glance services
+        g-api: false
+        g-reg: false
+        # Nova services
+        n-api: false
+        n-api-meta: false
+        n-cauth: false
+        n-cond: false
+        n-cpu: false
+        n-novnc: false
+        n-obj: false
+        n-sch: false
+        placement-api: false
+        # Neutron services
+        q-agt: true
+        q-dhcp: false
+        q-l3: false
+        q-meta: false
+        q-metering: false
+        q-svc: false
+
+# An equivalent tox-based functional test job to flock-devstack-virt-base
+- job:
+    name: flock-devstack-virt-tox-base
+    parent: devstack-tox-functional
+    description: |
+      Base job for StarlingX Flock components DevStack tests that use tox
+    nodeset: openstack-single-node-bionic
+    roles:
+      - zuul: openstack/devstack
+    timeout: 9000
+    required-projects:
+      - name: openstack/devstack
+      - name: openstack/keystone
+      - name: openstack/requirements
+    vars:
+      devstack_services:
+        ceilometer-acentral: false
+        ceilometer-acompute: false
+        ceilometer-alarm-evaluator: false
+        ceilometer-alarm-notifier: false
+        ceilometer-anotification: false
+        ceilometer-api: false
+        ceilometer-collector: false
+        horizon: false
+        # Swift services
+        s-account: false
+        s-container: false
+        s-object: false
+        s-proxy: false
+        tempest: false
+        # Database
+        mysql: false
+        postgresql: true
+      devstack_localrc:
+        # LIBS_FROM_GIT: keystone
+        FORCE: yes
+
+# And the tox version of the base-min job
+- job:
+    name: flock-devstack-virt-tox-base-min
+    parent: flock-devstack-virt-tox-base
+    timeout: 7800
+    vars:
+      devstack_services:
+        # Cinder services
+        c-api: false
+        c-bak: false
+        c-sch: false
+        c-vol: false
+        cinder: false
+        # Glance services
+        g-api: false
+        g-reg: false
+        # Nova services
+        n-api: false
+        n-api-meta: false
+        n-cauth: false
+        n-cond: false
+        n-cpu: false
+        n-novnc: false
+        n-obj: false
+        n-sch: false
+        placement-api: false
+        # Neutron services
+        q-agt: true
+        q-dhcp: false
+        q-l3: false
+        q-meta: false
+        q-metering: false
+        q-svc: false
+
+# Try this as a tox-based job with a minimal functional target in tox.ini
+- job:
+    name: stx-virt-pylint
+    parent: tox
+    required-projects:
+      - starlingx/config
+    vars:
+      tox_envlist: pylint
+      tox_extra_args: -c tox.ini
+
+- job:
+    name: stx-virt-upload-git-mirror
+    parent: upload-git-mirror
+    description: >
+      Mirrors opendev.org/starlingx/virt to
+      github.com/starlingx/virt
+    vars:
+      git_mirror_repository: starlingx/virt
+    secrets:
+      - name: git_mirror_credentials
+        secret: stx-virt-github-secret2
+        pass-to-parent: true
+
+- secret:
+    name: stx-virt-github-secret2
+    data:
+      user: git
+      host: github.com
+      # yamllint disable-line rule:line-length
+      host_key: github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=
+      ssh_key: !encrypted/pkcs1-oaep
+        - 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

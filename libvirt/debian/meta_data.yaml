@@ -13,4 +13,5 @@ src_files:
   - libvirt/hooks/qemu
 revision:
   dist: $STX_DIST
-  PKG_GITREVCOUNT: true
+  GITREVCOUNT:
+    BASE_SRCREV: 365de7ff2a68fff20d124fe90a90546e3f7e824f
