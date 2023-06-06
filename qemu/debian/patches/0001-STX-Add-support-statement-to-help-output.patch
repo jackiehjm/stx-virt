@@ -25,23 +25,25 @@ STX-Author: Jim Somerville <Jim.Somerville@windriver.com>
 Signed-off-by: Eduardo Habkost <ehabkost@redhat.com>
 Signed-off-by: Jim Somerville <Jim.Somerville@windriver.com>
 Signed-off-by: Rafael Falcao <Rafael.VieiraFalcao@windriver.com>
+[Rebased original changes to the qemu 7.2 version]
+Signed-off-by: david.liu <david.liu@windriver.com>
 ---
  softmmu/vl.c | 9 +++++++++
  1 file changed, 9 insertions(+)
 
 diff --git a/softmmu/vl.c b/softmmu/vl.c
-index e6e0ad5a92..27ce96f671 100644
+index 5115221e..a1720fe4 100644
 --- a/softmmu/vl.c
 +++ b/softmmu/vl.c
-@@ -1688,9 +1688,17 @@ static void version(void)
+@@ -834,9 +834,17 @@ static void version(void)
             QEMU_COPYRIGHT "\n");
  }
  
 +static void print_stx_warning(void)
 +{
 +    printf("\nWARNING: Direct use of qemu-kvm from the command line is not supported by StarlingX.\n"
-+             "WARNING: Use libvirt as the stable management interface.\n"
-+             "WARNING: Some command line options listed here may not be available in future releases.\n\n");
++           "WARNING: Use libvirt as the stable management interface.\n"
++           "WARNING: Some command line options listed here may not be available in future releases.\n\n");
 +}
 +
  static void help(int exitcode)
@@ -50,8 +52,8 @@ index e6e0ad5a92..27ce96f671 100644
 +    print_stx_warning();
      printf("usage: %s [options] [disk_image]\n\n"
             "'disk_image' is a raw hard disk image for IDE hard disk 0\n\n",
-             error_get_progname());
-@@ -1707,6 +1715,7 @@ static void help(int exitcode)
+             g_get_prgname());
+@@ -862,6 +870,7 @@ static void help(int exitcode)
             "\n"
             QEMU_HELP_BOTTOM "\n");
  
@@ -60,4 +62,5 @@ index e6e0ad5a92..27ce96f671 100644
  }
  
 -- 
-2.25.1
+2.30.2
+

@@ -20,15 +20,17 @@ collect2: error: ld returned 1 exit status
 Signed-off-by: Amy Fong <amy.fong@windriver.com>
 Signed-off-by: Jim Somerville <Jim.Somerville@windriver.com>
 Signed-off-by: Rafael Falcao <Rafael.VieiraFalcao@windriver.com>
+[Rebased original changes to the qemu 7.2 version]
+Signed-off-by: david.liu <david.liu@windriver.com>
 ---
  configure | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/configure b/configure
-index d0c4b79446..e90a4e8fe0 100755
+index 49e6ca1e..f61a8d3d 100755
 --- a/configure
 +++ b/configure
-@@ -6017,7 +6017,7 @@ if test "$dpdk" = "yes"; then
+@@ -2425,7 +2425,7 @@ if test "$dpdk" = "yes"; then
    echo "   \$(dpdk_lib_dir)/librte_mempool.a \\" >> $config_host_mak
    echo "   \$(dpdk_lib_dir)/librte_ring.a \\" >> $config_host_mak
    echo "   \$(dpdk_lib_dir)/librte_malloc.a" >> $config_host_mak
@@ -36,6 +38,7 @@ index d0c4b79446..e90a4e8fe0 100755
 +  LIBS="\$(dpdk_libs) -ldl $LIBS"
    QEMU_INCLUDES="-I\$(dpdk_inc_dir) $QEMU_INCLUDES"
  fi
- if test "$vde" = "yes" ; then
+ 
 -- 
-2.25.1
+2.30.2
+

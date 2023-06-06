@@ -28,15 +28,17 @@ memory map.
 Signed-off-by: Jim Somerville <Jim.Somerville@windriver.com>
 [ Trimmed the shortlog ]
 Signed-off-by: Rafael Falcao <Rafael.VieiraFalcao@windriver.com>
+[Rebased original changes to the qemu 7.2 version]
+Signed-off-by: david.liu <david.liu@windriver.com>
 ---
  hw/virtio/vhost.c | 26 +++++++++++++++++++++++++-
  1 file changed, 25 insertions(+), 1 deletion(-)
 
 diff --git a/hw/virtio/vhost.c b/hw/virtio/vhost.c
-index 614ccc2bcb..05c045925a 100644
+index fdcd1a8f..b2c9f5ee 100644
 --- a/hw/virtio/vhost.c
 +++ b/hw/virtio/vhost.c
-@@ -61,6 +61,10 @@ bool vhost_has_free_slot(void)
+@@ -62,6 +62,10 @@ bool vhost_has_free_slot(void)
      return slots_limit > used_memslots;
  }
  
@@ -47,14 +49,14 @@ index 614ccc2bcb..05c045925a 100644
  static void vhost_dev_sync_region(struct vhost_dev *dev,
                                    MemoryRegionSection *section,
                                    uint64_t mfirst, uint64_t mlast,
-@@ -448,6 +452,21 @@ static void vhost_begin(MemoryListener *listener)
+@@ -525,6 +529,21 @@ static void vhost_begin(MemoryListener *listener)
      dev->n_tmp_sections = 0;
  }
  
 +static void vhost_update_backend_ring_mappings(struct vhost_dev *dev)
 +{
 +    int i,r;
-+
++    
 +    if(dev->vhost_ops->backend_type != VHOST_BACKEND_TYPE_USER) {
 +        return;
 +    }
@@ -69,27 +71,27 @@ index 614ccc2bcb..05c045925a 100644
  static void vhost_commit(MemoryListener *listener)
  {
      struct vhost_dev *dev = container_of(listener, struct vhost_dev,
-@@ -524,7 +543,7 @@ static void vhost_commit(MemoryListener *listener)
+@@ -601,7 +620,7 @@ static void vhost_commit(MemoryListener *listener)
          if (r < 0) {
-             VHOST_OPS_DEBUG("vhost_set_mem_table failed");
+             VHOST_OPS_DEBUG(r, "vhost_set_mem_table failed");
          }
 -        goto out;
 +        goto vring_mapping;
      }
      log_size = vhost_get_log_size(dev);
      /* We allocate an extra 4K bytes to log,
-@@ -543,6 +562,11 @@ static void vhost_commit(MemoryListener *listener)
+@@ -620,6 +639,11 @@ static void vhost_commit(MemoryListener *listener)
          vhost_dev_log_resize(dev, log_size);
      }
  
 +vring_mapping:
-+    /* For vhost-user backend, update the vring mappings after we sent a new
-+     * guest memory map. */
-+    vhost_update_backend_ring_mappings(dev);
++/* For vhost-user backend, update the vring mappings after we sent a new
++* guest memory map. */
++    vhost_update_backend_ring_mappings(dev);	
 +
  out:
      /* Deref the old list of sections, this must happen _after_ the
       * vhost_set_mem_table to ensure the client isn't still using the
 -- 
-2.25.1
+2.30.2
 

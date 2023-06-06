@@ -14,18 +14,20 @@ Signed-off-by: Paul Barrette <paul.barrette@windriver.com>
 Signed-off-by: Jim Somerville <Jim.Somerville@windriver.com>
 [ Update qemu-options.hx struc ]
 Signed-off-by: Rafael Falcao <Rafael.VieiraFalcao@windriver.com>
+[Rebased original changes to the qemu 7.2 version]
+Signed-off-by: david.liu <david.liu@windriver.com>
 ---
  qemu-options.hx | 7 +++++++
  softmmu/vl.c    | 1 +
  2 files changed, 8 insertions(+)
 
 diff --git a/qemu-options.hx b/qemu-options.hx
-index 104632ea34..1a339453e4 100644
+index 7f99d15b..fd6a45f1 100644
 --- a/qemu-options.hx
 +++ b/qemu-options.hx
-@@ -906,6 +906,13 @@ DEFHEADING()
+@@ -1147,6 +1147,13 @@ backend describes how QEMU handles the data.
  
- DEFHEADING(Block device options:)
+ ERST
  
 +DEF("enable-dpdk", 0, QEMU_OPTION_enable_dpdk,
 +    "-enable-dpdk initialized DPDK EAL environment\n", QEMU_ARCH_ALL)
@@ -38,10 +40,10 @@ index 104632ea34..1a339453e4 100644
      "-fda/-fdb file  use 'file' as floppy disk 0/1 image\n", QEMU_ARCH_ALL)
  DEF("fdb", HAS_ARG, QEMU_OPTION_fdb, "", QEMU_ARCH_ALL)
 diff --git a/softmmu/vl.c b/softmmu/vl.c
-index 5f556f1a0e..a398697d0d 100644
+index 6c68f123..95fd30aa 100644
 --- a/softmmu/vl.c
 +++ b/softmmu/vl.c
-@@ -3899,6 +3899,7 @@ void qemu_init(int argc, char **argv, char **envp)
+@@ -3552,6 +3552,7 @@ void qemu_init(int argc, char **argv)
                  qsp_enable();
                  break;
              case QEMU_OPTION_nouserconfig:
@@ -50,4 +52,5 @@ index 5f556f1a0e..a398697d0d 100644
                  break;
              default:
 -- 
-2.25.1
+2.30.2
+
