@@ -8,9 +8,9 @@ libvirt-login-shell
 libvirt0
 
 #qemu
-qemu-block-extra
-qemu-guest-agent
-qemu-system-common
-qemu-system-data
-qemu-system-x86
-qemu-utils
+#qemu-block-extra
+#qemu-guest-agent
+#qemu-system-common
+#qemu-system-data
+#qemu-system-x86
+#qemu-utils
