@@ -1,0 +1,124 @@
+From f1be5a19e4b8f46f1475f0dbaabba29cc4dd2424 Mon Sep 17 00:00:00 2001
+From: Jackie Huang <jackie.huang@windriver.com>
+Date: Sun, 21 Jan 2024 23:27:14 -0500
+Subject: [PATCH] ARM: remove unsupported BIOS target
+
+The following BIOS related targets are for x86 only,
+- build-x86-optionrom
+- build-sgabios
+- build-qboot
+
+Remove these targets for ARM.
+
+Signed-off-by: Jackie Huang <jackie.huang@windriver.com>
+---
+ debian/rules | 88 ++++++++++++++++++++++++++--------------------------
+ 1 file changed, 44 insertions(+), 44 deletions(-)
+
+diff --git a/debian/rules b/debian/rules
+index efa092c..01764cc 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -405,55 +405,55 @@ endif
+ 
+ 
+ ### x86 optionrom
+-build-x86-optionrom: b/optionrom/built
+-b/optionrom/built:
+-	mkdir -p b/optionrom
+-	${MAKE} -f ${CURDIR}/debian/optionrom.mak -C b/optionrom SRC_PATH="${CURDIR}" all
+-	touch $@
+-install-x86-optionrom: build-x86-optionrom | ${sysdataidir}
+-	${MAKE} -f ${CURDIR}/debian/optionrom.mak -C b/optionrom SRC_PATH="${CURDIR}" install DESTDIR="${CURDIR}/${sysdataidir}"
+-sysdata-components += x86-optionrom
++#build-x86-optionrom: b/optionrom/built
++#b/optionrom/built:
++#	mkdir -p b/optionrom
++#	${MAKE} -f ${CURDIR}/debian/optionrom.mak -C b/optionrom SRC_PATH="${CURDIR}" all
++#	touch $@
++#install-x86-optionrom: build-x86-optionrom | ${sysdataidir}
++#	${MAKE} -f ${CURDIR}/debian/optionrom.mak -C b/optionrom SRC_PATH="${CURDIR}" install DESTDIR="${CURDIR}/${sysdataidir}"
++#sysdata-components += x86-optionrom
+ 
+ ### sgabios.
+ # The Makefile is too complex and forces current date to be embedded to binary
+-build-sgabios: b/sgabios/sgabios.bin
+-b/sgabios/sgabios.bin:
+-	mkdir -p b/sgabios
+-	cc -c -o b/sgabios/sgabios.o roms/sgabios/sgabios.S -Wall -Os -m32 -nostdlib \
+-	  -DBUILD_DATE="\"$$(LC_ALL=C date -u -r roms/sgabios/sgabios.S)\"" \
+-	  -DBUILD_SHORT_DATE="\"$$(date -u +%D -r roms/sgabios/sgabios.S)\"" \
+-	  -DBUILD_HOST=\"debian\" -DBUILD_USER=\"build\"
+-	ld -T roms/sgabios/rom16.ld -nostdlib b/sgabios/sgabios.o -o b/sgabios/sgabios.elf
+-	objcopy -O binary b/sgabios/sgabios.elf b/sgabios/sgabios.bin
+-	cc -Wall -O2 -o b/sgabios/csum8 roms/sgabios/csum8.c
+-	b/sgabios/csum8 b/sgabios/sgabios.bin
+-install-sgabios: b/sgabios/sgabios.bin
+-	install -m 0644 $< ${sysdataidir}/sgabios.bin
+-sysdata-components += sgabios
++#build-sgabios: b/sgabios/sgabios.bin
++#b/sgabios/sgabios.bin:
++#	mkdir -p b/sgabios
++#	cc -c -o b/sgabios/sgabios.o roms/sgabios/sgabios.S -Wall -Os -m32 -nostdlib \
++#	  -DBUILD_DATE="\"$$(LC_ALL=C date -u -r roms/sgabios/sgabios.S)\"" \
++#	  -DBUILD_SHORT_DATE="\"$$(date -u +%D -r roms/sgabios/sgabios.S)\"" \
++#	  -DBUILD_HOST=\"debian\" -DBUILD_USER=\"build\"
++#	ld -T roms/sgabios/rom16.ld -nostdlib b/sgabios/sgabios.o -o b/sgabios/sgabios.elf
++#	objcopy -O binary b/sgabios/sgabios.elf b/sgabios/sgabios.bin
++#	cc -Wall -O2 -o b/sgabios/csum8 roms/sgabios/csum8.c
++#	b/sgabios/csum8 b/sgabios/sgabios.bin
++#install-sgabios: b/sgabios/sgabios.bin
++#	install -m 0644 $< ${sysdataidir}/sgabios.bin
++#sysdata-components += sgabios
+ 
+ ### qboot, aka bios-microvm
+-build-qboot: b/qboot/bios.bin
+-b/qboot/bios.bin: | b
+-	rm -rf b/qboot
+-	meson setup roms/qboot b/qboot
+-	ninja -C b/qboot
+-install-qboot: b/qboot/bios.bin
+-	install -m 0644 $< ${sysdataidir}/qboot.rom
+-	# 5.0 & 5.1 compat symlink, can go for bullseye final
+-	ln -s qboot.rom ${sysdataidir}/bios-microvm.bin
+-sysdata-components += qboot
+-
+-### alpha firmware in roms/palcode-clipper
+-build-palcode-clipper: b/qemu-palcode/palcode-clipper
+-b/qemu-palcode/palcode-clipper: | b
+-	cp -al roms/qemu-palcode b/
+-#XXX #1019011 (remove OPT= alternative when fixed)
+-	${MAKE} -C b/qemu-palcode CROSS=${ALPHAEV67_CROSSPFX} -k || \
+-	${MAKE} -C b/qemu-palcode CROSS=${ALPHAEV67_CROSSPFX} OPT=-O1
+-	${ALPHAEV67_CROSSPFX}strip b/qemu-palcode/palcode-clipper
+-install-palcode-clipper: b/qemu-palcode/palcode-clipper
+-	install -m 0644 $< ${sysdataidir}/palcode-clipper
+-sysdata-components += palcode-clipper
++#build-qboot: b/qboot/bios.bin
++#b/qboot/bios.bin: | b
++#	rm -rf b/qboot
++#	meson setup roms/qboot b/qboot
++#	ninja -C b/qboot
++#install-qboot: b/qboot/bios.bin
++#	install -m 0644 $< ${sysdataidir}/qboot.rom
++#	# 5.0 & 5.1 compat symlink, can go for bullseye final
++#	ln -s qboot.rom ${sysdataidir}/bios-microvm.bin
++#sysdata-components += qboot
++#
++#### alpha firmware in roms/palcode-clipper
++#build-palcode-clipper: b/qemu-palcode/palcode-clipper
++#b/qemu-palcode/palcode-clipper: | b
++#	cp -al roms/qemu-palcode b/
++##XXX #1019011 (remove OPT= alternative when fixed)
++#	${MAKE} -C b/qemu-palcode CROSS=${ALPHAEV67_CROSSPFX} -k || \
++#	${MAKE} -C b/qemu-palcode CROSS=${ALPHAEV67_CROSSPFX} OPT=-O1
++#	${ALPHAEV67_CROSSPFX}strip b/qemu-palcode/palcode-clipper
++#install-palcode-clipper: b/qemu-palcode/palcode-clipper
++#	install -m 0644 $< ${sysdataidir}/palcode-clipper
++#sysdata-components += palcode-clipper
+ 
+ ### vbootrom (npcm7xx)
+ build-vbootrom: b/vbootrom/.built
+-- 
+2.30.2
+

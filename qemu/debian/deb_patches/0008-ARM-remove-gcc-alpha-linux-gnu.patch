@@ -1,0 +1,31 @@
+From 10362ba97dbd9c861554c5ce7258b9dc26e7b95e Mon Sep 17 00:00:00 2001
+From: Jackie Huang <jackie.huang@windriver.com>
+Date: Sun, 21 Jan 2024 21:30:44 -0500
+Subject: [PATCH] ARM: remove dependency on gcc-alpha-linux-gnu
+
+gcc-alpha-linux-gnu doesn't exist for arm64 according to:
+https://packages.debian.org/bullseye/gcc-alpha-linux-gnu
+
+So remove it from the dependency for arm64
+
+Signed-off-by: Jackie Huang <jackie.huang@windriver.com>
+---
+ debian/control | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/debian/control b/debian/control
+index 57154e2..ebc5b59 100644
+--- a/debian/control
++++ b/debian/control
+@@ -125,7 +125,7 @@ Build-Depends-Indep:
+  device-tree-compiler,
+ # gcc-s390x-linux-gnu,
+ # qemu-palcode/palcode-clipper
+- gcc-alpha-linux-gnu,
++# gcc-alpha-linux-gnu,
+ # skiboot firmware, openbios
+ # gcc-powerpc64-linux-gnu,
+ # openbios
+-- 
+2.30.2
+
